@@ -6,16 +6,34 @@ const state = {
     score: document.querySelector("#score"),
   },
   values: {
-    timerID: null,
-    gameVelocity: 1000,
     hitPosition: 0,
     result: 0,
-    currentTime: 60,
+    curretTime: 61,
+  },
+  actions: {
+    // GameVelocity:
+    timerID: setInterval(randomSquare, 1000),
+    // Timer:
+    countDownTimerId: setInterval(countDown, 1000),
   },
 };
 
 function countDown() {
-  state.values.currentTime;
+  state.values.curretTime--;
+  state.view.timeLeft.textContent = state.values.curretTime;
+
+  if (state.values.curretTime <= 0) {
+    clearInterval(state.actions.countDownTimerId);
+    clearInterval(state.actions.timerID);
+    playSound("game-over");
+    alert("Game Over! Seu resultado foi: " + state.values.result);
+  }
+}
+
+function playSound(audioName) {
+  let audio = new Audio(`./assets/audios/${audioName}.m4a`);
+  audio.volume = 0.1;
+  audio.play();
 }
 
 function randomSquare() {
@@ -29,10 +47,6 @@ function randomSquare() {
   state.values.hitPosition = randomSquare.id;
 }
 
-function moveEnemy() {
-  state.values.timerID = setInterval(randomSquare, state.values.gameVelocity);
-}
-
 function addListenerHitBox() {
   state.view.squares.forEach((square) => {
     square.addEventListener("mousedown", () => {
@@ -40,7 +54,7 @@ function addListenerHitBox() {
         state.values.result++;
         state.view.score.textContent = state.values.result;
         state.values.hitPosition = null;
-        alert("acertou");
+        playSound("hit");
       }
     });
   });
@@ -48,7 +62,6 @@ function addListenerHitBox() {
 
 // init ou main está certo
 function initialize() {
-  moveEnemy();
   addListenerHitBox();
 }
 
